@@ -51,7 +51,7 @@ The project follows standard dbt staging and mart layering principles:
 ├── schema.yml        # Model definitions, column descriptions, and tests
 └── dbt_project.yml   # Project configuration
 
-##　📊 Business & Analytical Insights
+📊 Business & Analytical Insights
 Spatial Distance Analysis: Measures accessibility gaps by evaluating patient distances to nearest GP practices.
 
 Capacity vs. Demand: Highlights practices experiencing high appointment cancellation rates alongside constrained workforce capacity.
