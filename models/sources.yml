@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: nhs_data
+    project: project-f9b55fc0-cc37-44aa-bca
+    dataset: NHS
+    # config:           ← ここを削除またはコメントアウト
+    #   location: ...  ← ここを削除またはコメントアウト
+    tables:
+      - name: v_nhs_shrewsbury_joined

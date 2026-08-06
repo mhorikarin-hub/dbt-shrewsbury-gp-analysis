@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: marts_gp_joined
+    description: "シュルーズベリーのGP診療所における位置情報、人員体制、患者デモグラフィック、予約待ち・キャンセル率を統合した分析用マスターテーブル"
+    columns:
+      - name: gp_code
+        description: "GP診療所コード（主キー）"
+        tests:
+          - unique
+          - not_null
+
+      - name: gp_name
+        description: "GP診療所名"
+        tests:
+          - not_null
