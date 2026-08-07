@@ -16,7 +16,7 @@ gp_surveys as (
 
 ),
 
--- GP基本情報に満足度データを結合
+-- Join GP basic info with patient satisfaction survey metrics
 gp_with_survey as (
 
     select
@@ -38,7 +38,7 @@ gp_with_survey as (
 
 ),
 
--- 全ポストコードと全GP診療所の組み合わせを作成し、距離を計算
+-- Cross join all postcodes and GP practices to calculate distances
 calculated_distances as (
 
     select
@@ -55,8 +55,10 @@ calculated_distances as (
         g.app_very_easy_pct,
         g.reception_very_helpful_pct,
         g.online_booking_pct,
+        
+        -- Calculate distance using geographic points
         ST_DISTANCE(
-            ST_GEOGPOINT(p.longitude, p.latitude),
+            coalesce(p.postcode_location, ST_GEOGPOINT(p.longitude, p.latitude)),
             g.gp_location
         ) as distance_meters
 
@@ -65,7 +67,7 @@ calculated_distances as (
 
 ),
 
--- 各ポストコードごとに距離が近い順に 1〜3 位の順位をつける
+-- Rank nearest GP practices (1 to 3) per postcode
 ranked_distances as (
 
     select
@@ -79,12 +81,12 @@ ranked_distances as (
 
 )
 
--- 縦持ちデータ（1郵便番号につき近隣トップ3の3行）を出力
+-- Output long-format dataset (Top 3 nearest GP practices per postcode)
 select
     postcode,
     postcode_lat,
     postcode_long,
-    rank_nearest as rank,  -- ★ 順位カラム (1, 2, 3)
+    rank_nearest as rank,  -- Rank column (1, 2, 3)
     gp_code,
     gp_name,
     gp_lat,

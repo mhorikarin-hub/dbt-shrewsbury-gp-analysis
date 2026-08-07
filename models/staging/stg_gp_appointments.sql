@@ -1,15 +1,18 @@
 with source as (
+
     select * from {{ ref('raw_gp_appointments') }}
+
 ),
 
 aggregated as (
+
     select
         cast(gp_code as string) as practice_code,
         
-        -- 総予約件数の合計
+        -- Total number of appointments
         sum(cast(count_of_appointments as int64)) as total_appointments,
         
-        -- 2週間（15日）以上の予約待ち件数の合計
+        -- Appointments waiting over 2 weeks (15+ days)
         sum(
             case 
                 when time_between_book_and_appt in ('15 to 28 Days', 'More than 28 Days', '15_to_28_days', '28_plus_days') 
@@ -18,7 +21,7 @@ aggregated as (
             end
         ) as wait_over_2weeks_count,
         
-        -- DNA (無断キャンセル) 件数の合計
+        -- Did Not Attend (DNA / Unattended) appointment count
         sum(
             case 
                 when appt_status in ('DNA', 'Did Not Attend') 
@@ -29,6 +32,7 @@ aggregated as (
 
     from source
     group by 1
+
 )
 
 select
@@ -37,13 +41,13 @@ select
     wait_over_2weeks_count,
     dna_count,
     
-    -- 【指標計算】2週間超え予約待ち率 (%)
+    -- Metrics: Percentage of appointments waiting over 2 weeks (%)
     safe_divide(
         cast(wait_over_2weeks_count as float64) * 100.0, 
         cast(total_appointments as float64)
     ) as wait_over_2weeks_pct,
     
-    -- 【指標計算】無断キャンセル(DNA)率 (%)
+    -- Metrics: DNA (Did Not Attend) rate (%)
     safe_divide(
         cast(dna_count as float64) * 100.0, 
         cast(total_appointments as float64)
